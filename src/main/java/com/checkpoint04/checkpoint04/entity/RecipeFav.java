@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 public class RecipeFav implements Serializable {
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -29,7 +30,7 @@ public class RecipeFav implements Serializable {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
             },
-            mappedBy = "movies")
+            mappedBy = "recipeFavs")
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 

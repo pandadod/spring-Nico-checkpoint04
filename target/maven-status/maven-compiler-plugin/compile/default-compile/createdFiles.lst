@@ -1,0 +1,7 @@
+com/checkpoint04/checkpoint04/Checkpoint04Application.class
+com/checkpoint04/checkpoint04/controller/UserController.class
+com/checkpoint04/checkpoint04/entity/User.class
+com/checkpoint04/checkpoint04/entity/RecipeFav.class
+com/checkpoint04/checkpoint04/repository/UserRepository.class
+com/checkpoint04/checkpoint04/repository/RecipeFavRepository.class
+com/checkpoint04/checkpoint04/controller/RecipeFavController.class
