@@ -30,12 +30,21 @@ public class RecipeFavController {
         return recipeFavRepository.findByNameContaining(ingredient);
     }
 
-    @PostMapping("/recipes")
-    public RecipeFav createRecipe(@RequestBody RecipeFav recipeFav) {
+    @PostMapping("/recipes/{idUser}")
+    public RecipeFav createRecipe(@PathVariable Long idUser, @RequestBody RecipeFav recipeFav) {
         Optional<RecipeFav> recipe = recipeFavRepository.findByName(recipeFav.getName());
+        User user = userRepository.findById(idUser).get();
         if (!(recipe.isPresent())) {
-            return recipeFavRepository.save(recipeFav);
+            RecipeFav recipeCreated = recipeFavRepository.save(recipeFav);
+            user.getRecipeFavs().add(recipeCreated);
+            userRepository.save(user);
+            return recipeCreated;
         }
+        RecipeFav recipeUpdated = recipe.get();
+        recipeUpdated.setUsers(recipeFav.getUsers());
+        recipeFavRepository.save(recipeUpdated);
+        user.getRecipeFavs().add(recipeUpdated);
+        userRepository.save(user);
         return recipe.get();
     }
 
@@ -47,10 +56,9 @@ public class RecipeFavController {
         userRepository.save(user);
         Set<User> listUser = recipeToDelete.getUsers();
         listUser.remove(user);
-        recipeFavRepository.save(recipeToDelete);
         if (listUser.size() == 0) {
             recipeFavRepository.delete(recipeToDelete);
         }
-
+        recipeFavRepository.save(recipeToDelete);
     }
 }

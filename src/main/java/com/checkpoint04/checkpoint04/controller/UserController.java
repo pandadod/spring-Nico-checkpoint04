@@ -5,6 +5,8 @@ import com.checkpoint04.checkpoint04.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class UserController {
 
@@ -26,5 +28,10 @@ public class UserController {
         User user = userRepository.findById(idUser).get();
         user.setRecipeFavs(userUpdate.getRecipeFavs());
         return userRepository.save(user);
+    }
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
