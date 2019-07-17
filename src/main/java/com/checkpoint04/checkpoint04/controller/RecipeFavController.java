@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @RestController
 public class RecipeFavController {
@@ -49,16 +50,25 @@ public class RecipeFavController {
     }
 
     @DeleteMapping("/recipes/{idRecipe}/{idUser}")
-    public void deleteRecipe(@PathVariable Long idRecipe, @PathVariable Long idUser) {
-        User user = userRepository.findById(idUser).get();
+    public RecipeFav deleteRecipe(@PathVariable Long idRecipe, @PathVariable Long idUser) {
+        User userUpdate = userRepository.findById(idUser).get();
+        Set<RecipeFav> listRecipe = userUpdate.getRecipeFavs();
         RecipeFav recipeToDelete = recipeFavRepository.findById(idRecipe).get();
-        user.getRecipeFavs().remove(recipeToDelete);
-        userRepository.save(user);
-        Set<User> listUser = recipeToDelete.getUsers();
-        listUser.remove(user);
-        if (listUser.size() == 0) {
-            recipeFavRepository.delete(recipeToDelete);
+        Optional<RecipeFav> recipeFavOptional = listRecipe.stream().filter(recipeFav -> recipeFav.getId() == recipeToDelete.getId()).findFirst();
+        if (recipeFavOptional.isPresent()){
+            userUpdate.getRecipeFavs().remove(recipeFavOptional.get());
+            userRepository.save(userUpdate);
         }
-        recipeFavRepository.save(recipeToDelete);
+        Set<User> listUser = recipeToDelete.getUsers();
+        Optional<User> userOptional = listUser.stream().filter(user -> user.getId() == userUpdate.getId()).findFirst();
+        if (userOptional.isPresent()){
+            recipeToDelete.getUsers().remove(userOptional.get());
+            recipeFavRepository.save(recipeToDelete);
+        }
+        if (recipeToDelete.getUsers().size() == 0) {
+             recipeFavRepository.delete(recipeToDelete);
+            return null;
+        }
+        return recipeFavRepository.save(recipeToDelete);
     }
 }
